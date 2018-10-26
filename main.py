@@ -70,18 +70,25 @@ def conv_1x1(x,num_classes, k_size=(1,1), name='conv_1x1', strides=(1,1)):
         tf.summary.histogram(name, conv_1x1_out)
 
         return conv_1x1_out
+
+
     
 def upsampling(x,num_classes,kernel_size=5, strides=2, name='upsample'):
     with tf.name_scope(name):
         initializer =  tf.random_normal_initializer(stddev=0.01)
         upsampling_out = tf.layers.conv2d_transpose(x,num_classes,kernel_size=kernel_size, strides=strides,padding = 'SAME', kernel_initializer = initializer,kernel_regularizer = tf.contrib.layers.l2_regularizer(1e-3))
         tf.summary.histogram(name, upsampling_out)
-        return upsampling_out 
+        return upsampling_out
+
+
+
 def skip_layer(upsampling, convolution, name="skip_layer"):
     with tf.name_scope(name):
         skip = tf.add(upsampling, convolution)
         tf.summary.histogram(name,skip)
         return skip
+
+
 
 def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     """
@@ -114,6 +121,8 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
 tests.test_layers(layers)
 
 
+
+
 def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     """
     Build the TensorFLow loss and optimizer operations.
@@ -137,6 +146,9 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
 #     adms optimizer
     return logits,train_op,corss_entropy_loss
 tests.test_optimize(optimize)
+
+
+
 
 
 def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
@@ -164,10 +176,12 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
         print("EPOCH {} ...".format(i+1))
         for image, label in get_batches_fn(batch_size):
             _, loss = sess.run([train_op, cross_entropy_loss], 
-                               feed_dict={input_image: image, correct_label: label,                                keep_prob: 0.5, learning_rate: 0.0009})
+                               feed_dict={input_image: image, correct_label: label,keep_prob: 0.5, learning_rate: 0.0009})
             print("Loss: = {:.3f}".format(loss))
         print()
 tests.test_train_nn(train_nn)
+
+
 
 
 def run():
